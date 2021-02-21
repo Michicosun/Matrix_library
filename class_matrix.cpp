@@ -1,24 +1,8 @@
-#include<iostream>
-#include<cmath>
-#include<algorithm>
-#include<vector>
-#include<map>
-#include<unordered_set>
-#include<unordered_map>
-#include<map>
-#include<set>
-#include<random>
-#include<algorithm>
-#include<queue>
-#include<stack>
-#include<deque>
-#include<bitset>
-#include<cstdio>
-#include<cassert>
-#include<sstream>
-#include<set>
-
-#define int long long int
+#include <iostream>
+#include <cmath>
+#include <vector>
+#include <numeric>
+#include <sstream>
 
 using namespace std;
 
@@ -246,7 +230,7 @@ public:
         }
         return in;
     }
-
+    
     friend ostream& operator<< (ostream& out, Matrix& a) {
         for (const auto& i : a.table) {
             for (auto j : i) out << j << " ";
