@@ -104,10 +104,7 @@ private:
     }
     
     void multiply(int row_i, Rational x) {
-        for (int w = 0; w < table.front().size(); ++w) {
-            
-            table[row_i][w] *= x;
-        }
+        for (int w = 0; w < table.front().size(); ++w) table[row_i][w] *= x;
     }
     
     void add(int row_j, int row_i, Rational x) {
@@ -123,7 +120,6 @@ public:
     void oneStepGauss(int st_row, int st_col) {
         auto [i, j] = getFirst(st_row, st_col);
         swap(table[st_row], table[i]);
-        
         for (int w = st_row + 1; w < table.size(); ++w) {
             multiply(w, table[st_row][j]);
             add(w, st_row, -table[w][j] / table[st_row][j]);
@@ -132,35 +128,34 @@ public:
     
     void getTriangularView() {
         auto p = getFirst(0, 0);
-        int now_row = p.first, now_col = p.second;
-        while (now_row < table.size() && now_col < table.front().size()) {
+        int now_row = 0, now_col = p.second;
+        while (p.first < table.size() && p.second < table.front().size()) {
             oneStepGauss(now_row, now_col);
             p = getFirst(now_row + 1, now_col + 1);
-            now_row = p.first; now_col = p.second;
+            ++now_row; now_col = p.second;
         }
     }
     
     void getTriangularView_Tex(const string& key) {
         auto p = getFirst(0, 0);
-        int now_row = p.first, now_col = p.second;
-        while (now_row < table.size() && now_col < table.front().size()) {
+        int now_row = 0, now_col = p.second;
+        while (p.first < table.size() && p.second < table.front().size()) {
             oneStepGauss(now_row, now_col);
-            cout << getTex(key);
             p = getFirst(now_row + 1, now_col + 1);
             if (p.first < table.size()) cout << "\\xrightarrow[]{}\n";
-            now_row = p.first; now_col = p.second;
+            ++now_row; now_col = p.second;
         }
     }
     
     void getImprovedSteppedView() {
         auto p = getFirst(0, 0);
-        int now_row = p.first, now_col = p.second;
+        int now_row = 0, now_col = p.second;
         vector<pair<int, int>> roots;
-        while (now_row < table.size() && now_col < table.front().size()) {
-            roots.push_back(p);
+        while (p.first < table.size() && p.second < table.front().size()) {
+            roots.push_back({now_row, now_col});
             oneStepGauss(now_row, now_col);
             p = getFirst(now_row + 1, now_col + 1);
-            now_row = p.first; now_col = p.second;
+            ++now_row; now_col = p.second;
         }
         reverse(roots.begin(), roots.end());
         for (const auto& [i, j] : roots) {
@@ -246,6 +241,6 @@ public:
 
 signed main() {
     Matrix a; cin >> a;
-    a.printTex("ccc|c");
+    a.getImprovedSteppedView_Tex("ccc|c");
     return 0;
 }
