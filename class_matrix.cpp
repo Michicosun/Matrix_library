@@ -29,7 +29,7 @@ public:
     Rational operator+ (const Rational& other) const {
         int na = a * other.b + other.a * b;
         int nb = b * other.b;
-        int g = gcd(na, nb);
+        int g = gcd(abs(na), abs(nb));
         na /= g; nb /= g;
         return Rational(na, nb);
     }
@@ -41,7 +41,7 @@ public:
     Rational operator* (const Rational& other) const {
         int na = a * other.a;
         int nb = b * other.b;
-        int g = gcd(na, nb);
+        int g = gcd(abs(na), abs(nb));
         na /= g; nb /= g;
         return Rational(na, nb);
     }
@@ -49,7 +49,7 @@ public:
     Rational operator/ (const Rational& other) const {
         int na = a * other.b;
         int nb = b * other.a;
-        int g = gcd(na, nb);
+        int g = gcd(abs(na), abs(nb));
         na /= g; nb /= g;
         return Rational(na, nb);
     }
@@ -72,7 +72,7 @@ public:
     
     string to_string() const {
         if (b == 1) return std::to_string(a);
-        else return std::to_string(a) + "/" = std::to_string(b);
+        else return std::to_string(a) + "/" + std::to_string(b);
     }
     
     friend ostream& operator<< (ostream& out, const Rational& a) {
@@ -104,7 +104,10 @@ private:
     }
     
     void multiply(int row_i, Rational x) {
-        for (int w = 0; w < table.front().size(); ++w) table[row_i][w] *= x;
+        for (int w = 0; w < table.front().size(); ++w) {
+            
+            table[row_i][w] *= x;
+        }
     }
     
     void add(int row_j, int row_i, Rational x) {
@@ -120,6 +123,7 @@ public:
     void oneStepGauss(int st_row, int st_col) {
         auto [i, j] = getFirst(st_row, st_col);
         swap(table[st_row], table[i]);
+        
         for (int w = st_row + 1; w < table.size(); ++w) {
             multiply(w, table[st_row][j]);
             add(w, st_row, -table[w][j] / table[st_row][j]);
@@ -169,16 +173,16 @@ public:
     
     void getImprovedSteppedView_Tex(const string& key) {
         auto p = getFirst(0, 0);
-        int now_row = p.first, now_col = p.second;
+        int now_row = 0, now_col = p.second;
         vector<pair<int, int>> roots;
         string ans = "";
         ans += getTex(key) + "\\xrightarrow[]{}\n";
-        while (now_row < table.size() && now_col < table.front().size()) {
-            roots.push_back(p);
+        while (p.first < table.size() && p.second < table.front().size()) {
+            roots.push_back({now_row, now_col});
             oneStepGauss(now_row, now_col);
             ans += getTex(key) + "\\xrightarrow[]{}\n";
             p = getFirst(now_row + 1, now_col + 1);
-            now_row = p.first; now_col = p.second;
+            ++now_row; now_col = p.second;
         }
         reverse(roots.begin(), roots.end());
         for (const auto& [i, j] : roots) {
@@ -242,9 +246,6 @@ public:
 
 signed main() {
     Matrix a; cin >> a;
-    cout << a << "\n\n";
-    a.getImprovedSteppedView_Tex("ccccc|ccc");
-    a.transpose();
-    cout << a << "\n";
+    a.printTex("ccc|c");
     return 0;
 }
