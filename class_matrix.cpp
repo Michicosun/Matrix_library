@@ -79,6 +79,14 @@ public:
         return out << a.to_string();
     }
     
+    friend istream& operator>> (istream& in, Rational& a) {
+        int f, s = 1; char c = ' ';
+        in >> f >> noskipws >> c >> skipws;
+        if (c == '/') in >> s;
+        a = Rational(f, s);
+        return in;
+    }
+    
     bool operator== (const Rational& other) const {
         return a == other.a && b == other.b;
     }
@@ -221,8 +229,9 @@ public:
     friend istream& operator>> (istream& in, Matrix& a) {
         string line;
         while (getline(in, line)) {
+            line += " ";
             stringstream ss(line);
-            int x;
+            Rational x;
             vector<Rational> ansLine;
             while (ss >> x) ansLine.push_back(x);
             a.table.push_back(ansLine);
@@ -241,6 +250,7 @@ public:
 
 signed main() {
     Matrix a; cin >> a;
-    a.getImprovedSteppedView_Tex("ccc|c");
+    cout << a << "\n";
+    a.getImprovedSteppedView_Tex("ccc");
     return 0;
 }
